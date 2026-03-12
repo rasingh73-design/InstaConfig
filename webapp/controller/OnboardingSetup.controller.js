@@ -442,15 +442,26 @@ sap.ui.define([
                     console.log("[AI] Parsed response:", data);
                     
                     // Handle orchestration response format
-                    // Response can be in: data.orchestration_result.choices[0].message.content
+                    // Response can be in: data.final_result.choices[0].message.content (new orchestration format)
+                    // or data.orchestration_result.choices[0].message.content
                     // or data.choices[0].message.content
                     var content = 
+                        (data.final_result && data.final_result.choices && data.final_result.choices[0] && data.final_result.choices[0].message && data.final_result.choices[0].message.content) ||
                         (data.orchestration_result && data.orchestration_result.choices && data.orchestration_result.choices[0] && data.orchestration_result.choices[0].message && data.orchestration_result.choices[0].message.content) ||
                         (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content);
                     
                     if (content) {
                         console.log("[AI] AI response content:", content.substring(0, 200));
                         try {
+                            // Claude wraps JSON in markdown code blocks: ```json ... ```
+                            // First try to extract from markdown code block
+                            var codeBlockMatch = content.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+                            if (codeBlockMatch) {
+                                content = codeBlockMatch[1];
+                                console.log("[AI] Extracted from markdown code block");
+                            }
+                            
+                            // Now extract the JSON array
                             var jsonMatch = content.match(/\[[\s\S]*\]/);
                             if (jsonMatch) {
                                 var employees = JSON.parse(jsonMatch[0]);
