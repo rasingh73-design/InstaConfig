@@ -685,7 +685,7 @@ sap.ui.define([
                     that._addCompensationSheet(wb, employees);
 
                     if (navigateToUpload) {
-                        // Store workbook in component for DataUpload to use
+                        // Store workbook in component for App view to use
                         that.getOwnerComponent().setModel(new JSONModel({
                             workbook: wb,
                             companyName: company.name,
@@ -696,9 +696,9 @@ sap.ui.define([
                         that._hideBusyDialog();
                         MessageToast.show("Workbook generated! Loading upload screen...");
 
-                        // Navigate to DataUpload view
+                        // Navigate to App view (upload functionality)
                         setTimeout(function() {
-                            that.getOwnerComponent().getRouter().navTo("RouteDataUpload");
+                            that.getOwnerComponent().getRouter().navTo("RouteApp");
                         }, 300);
                     } else {
                         // Download the workbook
