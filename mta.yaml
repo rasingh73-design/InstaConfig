@@ -71,18 +71,7 @@ resources:
             ProxyType: Internet
             Type: HTTP
             URL: https://ui5.sap.com
-          - Authentication: OAuth2ClientCredentials
-            Name: genai-dest
-            Description: SAP AI Core GenAI Destination
-            ProxyType: Internet
-            Type: HTTP
-            URL: https://api.ai.prod.us-east-1.aws.ml.hana.ondemand.com/v2
-            tokenServiceURL: https://six-ai.authentication.us10.hana.ondemand.com/oauth/token
-            clientId: sb-6424e28b-8759-4457-a477-a162a1b419d6!b273804|aicore!b164
-            clientSecret: ~{genai-dest-credentials/clientSecret}
-            HTML5.DynamicDestination: true
-            URL.headers.Content-Type: application/json
-            URL.headers.AI-Resource-Group: default
+          # genai-dest removed - using BTP Cockpit destination instead
           existing_destinations_policy: update
       version: 1.0.0
     service: destination
