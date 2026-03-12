@@ -1,0 +1,285 @@
+<mvc:View
+    controllerName="com.ec.expressecm.controller.OnboardingSetup"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:u="sap.ui.unified"
+    xmlns:core="sap.ui.core">
+    
+    <Page id="onboardingSetupPage" 
+          title="StartSuccess Setup" 
+          showHeader="true"
+          enableScrolling="true">
+        
+        <customHeader>
+            <Bar>
+                <contentLeft>
+                    <HBox alignItems="Center">
+                        <core:Icon src="sap-icon://shield" size="1.2rem" color="#1a5336" class="sapUiTinyMarginEnd"/>
+                        <Title text="StartSuccess Setup" level="H3"/>
+                    </HBox>
+                </contentLeft>
+                <contentRight>
+                    <ObjectStatus text="New Company" state="Information" icon="sap-icon://building"/>
+                </contentRight>
+            </Bar>
+        </customHeader>
+        
+        <content>
+            <VBox alignItems="Center" class="sapUiSmallMarginTop">
+                <VBox width="600px">
+
+                    <!-- STEP 1: Company Information -->
+                    <Panel id="setupStep1Card" class="sapUiSmallMarginBottom setupPanel" headerText="StartSuccess Setup - Step 1 of 3: Company Information">
+                        <VBox class="sapUiMediumMargin">
+                            <VBox class="sapUiSmallMarginBottom">
+                                <Label text="Company Name" required="true" class="sapUiTinyMarginBottom"/>
+                                <Input id="companyNameInput" 
+                                       value="{setupModel>/company/name}" 
+                                       placeholder="e.g., Acme Corporation"
+                                       width="100%"/>
+                            </VBox>
+                            
+                            <VBox class="sapUiSmallMarginBottom">
+                                <Label text="Country" required="true" class="sapUiTinyMarginBottom"/>
+                                <Select id="countrySelect" 
+                                        selectedKey="{setupModel>/company/country}"
+                                        width="100%">
+                                    <core:Item key="" text="Select Country..."/>
+                                    <core:Item key="US" text="🇺🇸 United States"/>
+                                    <core:Item key="GB" text="🇬🇧 United Kingdom"/>
+                                    <core:Item key="DE" text="🇩🇪 Germany"/>
+                                    <core:Item key="FR" text="🇫🇷 France"/>
+                                    <core:Item key="CA" text="🇨🇦 Canada"/>
+                                    <core:Item key="AU" text="🇦🇺 Australia"/>
+                                    <core:Item key="JP" text="🇯🇵 Japan"/>
+                                    <core:Item key="IN" text="🇮🇳 India"/>
+                                    <core:Item key="BR" text="🇧🇷 Brazil"/>
+                                    <core:Item key="MX" text="🇲🇽 Mexico"/>
+                                    <core:Item key="SG" text="🇸🇬 Singapore"/>
+                                    <core:Item key="NL" text="🇳🇱 Netherlands"/>
+                                </Select>
+                            </VBox>
+                            
+                            <VBox class="sapUiSmallMarginBottom">
+                                <Label text="Industry" required="true" class="sapUiTinyMarginBottom"/>
+                                <Select id="industrySelect" 
+                                        selectedKey="{setupModel>/company/industry}"
+                                        width="100%">
+                                    <core:Item key="" text="Select Industry..."/>
+                                    <core:Item key="technology" text="💻 Technology"/>
+                                    <core:Item key="healthcare" text="🏥 Healthcare"/>
+                                    <core:Item key="finance" text="🏦 Finance &amp; Banking"/>
+                                    <core:Item key="retail" text="🛒 Retail"/>
+                                    <core:Item key="manufacturing" text="🏭 Manufacturing"/>
+                                    <core:Item key="education" text="🎓 Education"/>
+                                    <core:Item key="hospitality" text="🏨 Hospitality"/>
+                                    <core:Item key="consulting" text="📊 Consulting"/>
+                                    <core:Item key="sales" text="📈 General Sales"/>
+                                    <core:Item key="logistics" text="🚚 Logistics"/>
+                                    <core:Item key="media" text="🎬 Media &amp; Entertainment"/>
+                                    <core:Item key="energy" text="⚡ Energy"/>
+                                </Select>
+                            </VBox>
+                            
+                            <VBox class="sapUiSmallMarginBottom">
+                                <Label text="Expected Employee Count" required="true" class="sapUiTinyMarginBottom"/>
+                                <Select id="employeeCountSelect" 
+                                        selectedKey="{setupModel>/company/employeeCount}"
+                                        width="100%">
+                                    <core:Item key="" text="Select Range..."/>
+                                    <core:Item key="1-10" text="1-10 employees"/>
+                                    <core:Item key="11-50" text="11-50 employees"/>
+                                    <core:Item key="51-100" text="51-100 employees"/>
+                                    <core:Item key="101-250" text="101-250 employees"/>
+                                    <core:Item key="251-500" text="251-500 employees"/>
+                                    <core:Item key="501-1000" text="501-1000 employees"/>
+                                    <core:Item key="1000+" text="1000+ employees"/>
+                                </Select>
+                            </VBox>
+                            
+                            <HBox justifyContent="End" class="sapUiMediumMarginTop">
+                                <Button 
+                                    text="Next: Add Employees →" 
+                                    type="Emphasized" 
+                                    press=".onGoToStep2"/>
+                            </HBox>
+                        </VBox>
+                    </Panel>
+
+                    <!-- STEP 2: Add Employees -->
+                    <Panel id="setupStep2Card" visible="false" class="sapUiSmallMarginBottom setupPanel" headerText="StartSuccess Setup - Step 2 of 3: Add Your Team">
+                        <VBox class="sapUiMediumMargin">
+                            <!-- Import Options -->
+                            <HBox class="sapUiSmallMarginBottom" alignItems="Center">
+                                <Button 
+                                    id="importCsvBtn"
+                                    text="Import from CSV" 
+                                    icon="sap-icon://document-text"
+                                    type="Default"
+                                    press=".onImportCSV"
+                                    class="sapUiTinyMarginEnd"/>
+                                <Button 
+                                    id="importExcelBtn"
+                                    text="Import from Excel" 
+                                    icon="sap-icon://excel-attachment"
+                                    type="Default"
+                                    press=".onImportExcel"
+                                    class="sapUiTinyMarginEnd"/>
+                                <Button 
+                                    id="generateAIBtn"
+                                    text="Generate with AI" 
+                                    icon="sap-icon://ai"
+                                    type="Emphasized"
+                                    press=".onGenerateWithAI"/>
+                            </HBox>
+                            
+                            <!-- Hidden file uploaders -->
+                            <u:FileUploader
+                                id="csvUploader"
+                                visible="false"
+                                fileType="csv"
+                                change=".onCSVFileSelected"/>
+                            <u:FileUploader
+                                id="excelUploader"
+                                visible="false"
+                                fileType="xlsx"
+                                change=".onExcelFileSelected"/>
+                            
+                            <Text text="Or add employees manually:" class="sapUiTinyMarginBottom"/>
+                            
+                            <!-- Employees Table -->
+                            <Table id="employeesTable" 
+                                   items="{setupModel>/employees}"
+                                   class="employeesTable sapUiSmallMarginBottom">
+                                <columns>
+                                    <Column width="15%"><Text text="First Name"/></Column>
+                                    <Column width="15%"><Text text="Last Name"/></Column>
+                                    <Column width="22%"><Text text="Email"/></Column>
+                                    <Column width="15%"><Text text="Job Title"/></Column>
+                                    <Column width="18%"><Text text="Manager"/></Column>
+                                    <Column width="50px" hAlign="Center"><Text text=""/></Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem>
+                                        <Input value="{setupModel>firstName}" placeholder="First"/>
+                                        <Input value="{setupModel>lastName}" placeholder="Last"/>
+                                        <Input value="{setupModel>email}" placeholder="email@company.com"/>
+                                        <Input value="{setupModel>jobTitle}" placeholder="Title"/>
+                                        <Select selectedKey="{setupModel>manager}" width="100%">
+                                            <core:Item key="" text="- None (Own) -"/>
+                                            <items>
+                                                <core:Item key="{setupModel>userId}" text="{setupModel>firstName} {setupModel>lastName}"/>
+                                            </items>
+                                        </Select>
+                                        <Button icon="sap-icon://delete" type="Transparent" press=".onDeleteEmployee"/>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+                            
+                            <Button 
+                                text="+ Add Another Employee" 
+                                type="Transparent" 
+                                icon="sap-icon://add"
+                                press=".onAddEmployee"
+                                class="sapUiTinyMarginBottom"/>
+                            
+                            <HBox justifyContent="SpaceBetween" class="sapUiMediumMarginTop">
+                                <Button text="← Back" press=".onBackToStep1"/>
+                                <Button 
+                                    text="Next: Review &amp; Create →" 
+                                    type="Emphasized" 
+                                    press=".onGoToStep3"/>
+                            </HBox>
+                        </VBox>
+                    </Panel>
+
+                    <!-- STEP 3: Review & Create -->
+                    <Panel id="setupStep3Card" visible="false" class="sapUiSmallMarginBottom setupPanel" headerText="StartSuccess Setup - Step 3 of 3: Review &amp; Create">
+                        <VBox class="sapUiMediumMargin">
+                            <!-- Company Summary -->
+                            <Title text="Company Summary" level="H5" class="sectionTitle sapUiTinyMarginBottom"/>
+                            <VBox class="summaryBox sapUiSmallMarginBottom">
+                                <HBox class="summaryRow">
+                                    <Label text="Company Name:" class="summaryLabel"/>
+                                    <Text text="{setupModel>/company/name}" class="summaryValue"/>
+                                </HBox>
+                                <HBox class="summaryRow">
+                                    <Label text="Country:" class="summaryLabel"/>
+                                    <Text text="{setupModel>/company/countryDisplay}" class="summaryValue"/>
+                                </HBox>
+                                <HBox class="summaryRow">
+                                    <Label text="Industry:" class="summaryLabel"/>
+                                    <Text text="{setupModel>/company/industryDisplay}" class="summaryValue"/>
+                                </HBox>
+                                <HBox class="summaryRow">
+                                    <Label text="Total Employees:" class="summaryLabel"/>
+                                    <Text text="{setupModel>/employeeCount}" class="summaryValue"/>
+                                </HBox>
+                            </VBox>
+                            
+                            <!-- What Will Be Created -->
+                            <Title text="What Will Be Created" level="H5" class="sectionTitle sapUiTinyMarginBottom"/>
+                            <VBox class="creationList sapUiSmallMarginBottom">
+                                <HBox alignItems="Center" class="creationItem">
+                                    <core:Icon src="sap-icon://accept" size="0.9rem" color="#107c41" class="sapUiTinyMarginEnd"/>
+                                    <Text text="Organization structure (Business Unit, Department, Cost Center)"/>
+                                </HBox>
+                                <HBox alignItems="Center" class="creationItem">
+                                    <core:Icon src="sap-icon://accept" size="0.9rem" color="#107c41" class="sapUiTinyMarginEnd"/>
+                                    <Text text="{setupModel>/employeeCount} employee profiles with full HR data"/>
+                                </HBox>
+                                <HBox alignItems="Center" class="creationItem">
+                                    <core:Icon src="sap-icon://accept" size="0.9rem" color="#107c41" class="sapUiTinyMarginEnd"/>
+                                    <Text text="Position hierarchy with reporting lines"/>
+                                </HBox>
+                                <HBox alignItems="Center" class="creationItem">
+                                    <core:Icon src="sap-icon://accept" size="0.9rem" color="#107c41" class="sapUiTinyMarginEnd"/>
+                                    <Text text="User accounts with login access"/>
+                                </HBox>
+                                <HBox alignItems="Center" class="creationItem">
+                                    <core:Icon src="sap-icon://accept" size="0.9rem" color="#107c41" class="sapUiTinyMarginEnd"/>
+                                    <Text text="Industry-specific goal templates"/>
+                                </HBox>
+                                <HBox alignItems="Center" class="creationItem">
+                                    <core:Icon src="sap-icon://accept" size="0.9rem" color="#107c41" class="sapUiTinyMarginEnd"/>
+                                    <Text text="Learning path enrollments"/>
+                                </HBox>
+                                <HBox alignItems="Center" class="creationItem">
+                                    <core:Icon src="sap-icon://accept" size="0.9rem" color="#107c41" class="sapUiTinyMarginEnd"/>
+                                    <Text text="Skill profile assignments"/>
+                                </HBox>
+                            </VBox>
+                            
+                            <!-- Ready to Go -->
+                            <MessageStrip 
+                                text="Ready to Go! Click 'Create My HR System' to provision your StartSuccess environment. This typically takes 2-3 minutes." 
+                                type="Success" 
+                                showIcon="true"
+                                class="sapUiSmallMarginBottom"/>
+                            
+                            <HBox justifyContent="SpaceBetween" class="sapUiMediumMarginTop">
+                                <Button text="← Back" press=".onBackToStep2"/>
+                                <HBox>
+                                    <Button 
+                                        id="downloadWorkbookBtn"
+                                        text="Download Onboarding Workbook" 
+                                        icon="sap-icon://download"
+                                        type="Default"
+                                        press=".onDownloadWorkbook"
+                                        class="sapUiTinyMarginEnd"/>
+                                    <Button 
+                                        id="createSystemBtn"
+                                        text="Create My HR System" 
+                                        icon="sap-icon://accept"
+                                        type="Accept"
+                                        press=".onCreateHRSystem"/>
+                                </HBox>
+                            </HBox>
+                        </VBox>
+                    </Panel>
+
+                </VBox>
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

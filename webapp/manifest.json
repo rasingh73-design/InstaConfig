@@ -1,0 +1,120 @@
+{
+  "_version": "1.76.0",
+  "sap.app": {
+    "id": "com.ec.expressecm",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.2"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.19.1",
+      "toolsId": "0d9f048c-1fc3-4f2a-afca-6c50cd2c23d9"
+    },
+    "dataSources": {
+      "genaiDestination": {
+        "uri": "/genai/",
+        "type": "JSON"
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": false,
+    "dependencies": {
+      "minUI5Version": "1.145.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.ui.unified": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "com.ec.expressecm.i18n.i18n"
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "transition": "slide",
+        "type": "View",
+        "viewType": "XML",
+        "path": "com.ec.expressecm.view",
+        "async": true,
+        "viewPath": "com.ec.expressecm.view"
+      },
+      "routes": [
+        {
+          "name": "RouteOnboardingSetup",
+          "pattern": ":?query:",
+          "target": [
+            "TargetOnboardingSetup"
+          ]
+        },
+        {
+          "name": "Routeexpressecv",
+          "pattern": "expressecv",
+          "target": [
+            "Targetexpressecv"
+          ]
+        }
+      ],
+      "targets": {
+        "Targetexpressecv": {
+          "id": "expressecv",
+          "name": "expressecv"
+        },
+        "TargetOnboardingSetup": {
+          "id": "OnboardingSetup",
+          "name": "OnboardingSetup"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "com.ec.expressecm.view.App",
+      "type": "XML",
+      "id": "app",
+      "async": true
+    }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "comecexpressecm"
+  }
+}

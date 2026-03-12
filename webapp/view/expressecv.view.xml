@@ -1,0 +1,202 @@
+<mvc:View
+    controllerName="com.ec.expressecm.controller.App"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:u="sap.ui.unified"
+    xmlns:core="sap.ui.core">
+    
+    <Page id="dataUploadPage" 
+          title="SF Express Data Upload" 
+          showHeader="true"
+          enableScrolling="true">
+        
+        <customHeader>
+            <Bar>
+                <contentMiddle>
+                    <Title text="SF Express Data Upload" level="H3"/>
+                </contentMiddle>
+                <contentRight>
+                    <ObjectStatus text="SFSALES011432" state="Success" icon="sap-icon://connected"/>
+                </contentRight>
+            </Bar>
+        </customHeader>
+        
+        <content>
+            <VBox alignItems="Center" class="sapUiSmallMarginTop">
+                <VBox width="480px">
+
+                    <!-- STEP 1: File Upload -->
+                    <Panel id="step1Card" headerText="Step 1: Upload Workbook" class="sapUiSmallMarginBottom">
+                        <VBox class="sapUiSmallMargin">
+                            <HBox alignItems="Center" class="sapUiTinyMarginBottom">
+                                <core:Icon src="sap-icon://excel-attachment" size="1.5rem" color="#107c41" class="sapUiTinyMarginEnd"/>
+                                <Text text="Select your Excel file (.xlsx)"/>
+                            </HBox>
+                            <u:FileUploader
+                                id="fileUploader"
+                                width="100%"
+                                change=".onFileChange"
+                                fileType="xlsx"
+                                placeholder="Choose file..."
+                                buttonText="Browse"
+                                class="sapUiTinyMarginBottom"/>
+                            <Button
+                                id="parseBtn"
+                                text="Parse Workbook"
+                                type="Emphasized"
+                                icon="sap-icon://accept"
+                                press=".onParseWorkbook"
+                                enabled="false"
+                                width="100%"/>
+                        </VBox>
+                    </Panel>
+
+                    <!-- STEP 2: Select Entities -->
+                    <Panel id="step2Card" headerText="Step 2: Select Entities" visible="false" class="sapUiSmallMarginBottom">
+                        <VBox class="sapUiSmallMargin">
+                            <Toolbar class="sapUiTinyMarginBottom">
+                                <Title text="Available Sheets" level="H5"/>
+                                <ToolbarSpacer/>
+                                <Button text="All" press=".onSelectAll" type="Transparent"/>
+                                <Button text="None" press=".onDeselectAll" type="Transparent"/>
+                            </Toolbar>
+                            <List id="sheetsList" mode="MultiSelect" includeItemInSelection="true"/>
+                            <HBox class="sapUiSmallMarginTop">
+                                <Button text="Back" press=".onBackToStep1" class="sapUiTinyMarginEnd"/>
+                                <Button text="Next" press=".onGoToStep3" type="Emphasized" width="100%"/>
+                            </HBox>
+                        </VBox>
+                    </Panel>
+
+                    <!-- STEP 3: Configure -->
+                    <Panel id="step3Card" headerText="Step 3: Configure &amp; Upload" visible="false" class="sapUiSmallMarginBottom">
+                        <VBox class="sapUiSmallMargin">
+                            <HBox>
+                                <VBox class="sapUiTinyMarginEnd">
+                                    <Label text="Destination"/>
+                                    <Input id="destinationInput" value="SFSALES011432" width="180px"/>
+                                </VBox>
+                                <VBox>
+                                    <Label text="Batch Size"/>
+                                    <Input id="batchSizeInput" value="50" type="Number" width="70px"/>
+                                </VBox>
+                            </HBox>
+                            <HBox class="sapUiSmallMarginTop">
+                                <Button text="Back" press=".onBackToStep2" class="sapUiTinyMarginEnd"/>
+                                <Button id="uploadBtn" text="Start Upload" press=".onStartUpload" type="Accept" icon="sap-icon://upload" width="100%"/>
+                            </HBox>
+                        </VBox>
+                    </Panel>
+
+                    <!-- STEP 4: Progress -->
+                    <Panel id="step4Card" headerText="Uploading..." visible="false" class="sapUiSmallMarginBottom">
+                        <VBox class="sapUiSmallMargin">
+                            <HBox justifyContent="SpaceBetween" class="sapUiTinyMarginBottom">
+                                <Label text="Entity:"/>
+                                <ObjectStatus id="currentEntityStatus" text="Initializing..."/>
+                            </HBox>
+                            <ProgressIndicator id="overallProgress" percentValue="0" displayValue="0%" class="sapUiTinyMarginBottom"/>
+                            <HBox justifyContent="SpaceBetween" class="sapUiTinyMarginBottom">
+                                <Label text="Records:"/>
+                                <Text id="recordsStatus" text="0 / 0"/>
+                            </HBox>
+                            
+                            <Panel headerText="Current Record" class="sapUiTinyMarginBottom">
+                                <HBox class="sapUiTinyMargin">
+                                    <Label text="Record #" class="sapUiTinyMarginEnd"/>
+                                    <ObjectNumber id="currentRecordNumber" number="0" emphasized="true"/>
+                                </HBox>
+                                <Table id="currentRecordTable" items="{currentRecordModel>/fields}" fixedLayout="false">
+                                    <columns>
+                                        <Column width="40%"><Text text="Field"/></Column>
+                                        <Column><Text text="Value"/></Column>
+                                    </columns>
+                                    <items>
+                                        <ColumnListItem>
+                                            <Text text="{currentRecordModel>field}"/>
+                                            <Text text="{currentRecordModel>value}"/>
+                                        </ColumnListItem>
+                                    </items>
+                                </Table>
+                            </Panel>
+                            
+                            <TextArea id="logArea" rows="3" width="100%" editable="false" placeholder="Log..."/>
+                        </VBox>
+                    </Panel>
+
+                    <!-- STEP 5: Results - SIDE BY SIDE LAYOUT -->
+                    <Panel id="step5Card" headerText="Upload Complete" visible="false">
+                        <VBox class="sapUiSmallMargin">
+                            <MessageStrip id="resultStatus" text="" type="Success" showIcon="true" class="sapUiSmallMarginBottom"/>
+                            
+                            <!-- Download button always visible at top -->
+                            <Toolbar class="sapUiSmallMarginBottom">
+                                <ToolbarSpacer/>
+                                <Button 
+                                    id="downloadFailedBtn"
+                                    text="Download Failed Records"
+                                    type="Reject"
+                                    icon="sap-icon://download"
+                                    press=".onDownloadFailedRecords"
+                                    visible="false"/>
+                                <Button text="Upload Another" press=".onReset" type="Emphasized" icon="sap-icon://refresh" class="sapUiTinyMarginBegin"/>
+                            </Toolbar>
+                        </VBox>
+                    </Panel>
+
+                </VBox>
+                
+                <!-- Side by side tables - full width -->
+                <HBox id="resultsContainer" visible="false" width="100%" class="sapUiSmallMarginTop">
+                    
+                    <!-- LEFT: Results Summary -->
+                    <VBox width="45%" class="sapUiSmallMarginEnd">
+                        <Panel headerText="Upload Summary">
+                            <Table id="resultsTable" items="{resultsModel>/results}">
+                                <columns>
+                                    <Column><Text text="Entity"/></Column>
+                                    <Column hAlign="Center" width="50px"><Text text="Total"/></Column>
+                                    <Column hAlign="Center" width="45px"><Text text="OK"/></Column>
+                                    <Column hAlign="Center" width="45px"><Text text="Fail"/></Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem type="Active" press=".onShowEntityErrors">
+                                        <Text text="{resultsModel>entity}"/>
+                                        <Text text="{resultsModel>total}"/>
+                                        <ObjectNumber number="{resultsModel>success}" state="Success"/>
+                                        <ObjectNumber number="{resultsModel>failed}" state="{= ${resultsModel>failed} > 0 ? 'Error' : 'Success'}"/>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+                        </Panel>
+                    </VBox>
+                    
+                    <!-- RIGHT: Error Details -->
+                    <VBox id="errorsPanel" width="55%" visible="false">
+                        <Panel headerText="Failed OData Queries">
+                            <VBox class="sapUiTinyMargin">
+                                <Table id="errorsTable" items="{errorsModel>/errors}">
+                                    <columns>
+                                        <Column width="100px"><Text text="Entity"/></Column>
+                                        <Column width="50px"><Text text="Row"/></Column>
+                                        <Column><Text text="OData Query"/></Column>
+                                        <Column><Text text="Server Error"/></Column>
+                                    </columns>
+                                    <items>
+                                        <ColumnListItem>
+                                            <Text text="{errorsModel>entity}"/>
+                                            <Text text="{errorsModel>recordNum}"/>
+                                            <Text text="{errorsModel>query}" wrapping="true"/>
+                                            <ObjectStatus text="{errorsModel>error}" state="Error"/>
+                                        </ColumnListItem>
+                                    </items>
+                                </Table>
+                            </VBox>
+                        </Panel>
+                    </VBox>
+                    
+                </HBox>
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

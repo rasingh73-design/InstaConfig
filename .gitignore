@@ -1,0 +1,30 @@
+# Node modules
+node_modules/
+npm-debug.log
+package-lock.json
+
+# Build artifacts
+dist/
+resources/
+mta_archives/
+gen/
+.che/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temp files
+*.tmp
+.tmp/
