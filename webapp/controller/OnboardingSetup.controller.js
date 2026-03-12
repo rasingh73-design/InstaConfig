@@ -360,11 +360,25 @@ sap.ui.define([
                 }
 
                 var prompt = that._buildAIPrompt(count, company);
-                // Use genai destination path - OAuth is handled by BTP destination service automatically
-                var endpoint = that._aiConfig.baseUrl + "/inference/deployments/d0e8c5c3e4b01dd5/chat/completions?api-version=2024-02-01";
+                // Use genai destination path with ORCHESTRATION format
+                // Changed from /chat/completions to /v2/completion (orchestration API)
+                var endpoint = that._aiConfig.baseUrl + "/inference/deployments/da1068f8a530837a/v2/completion";
                 
-                console.log("[AI] Calling endpoint:", endpoint);
+                console.log("[AI] Calling orchestration endpoint:", endpoint);
                 
+                // Prepare messages array
+                var messages = [
+                    {
+                        role: "system",
+                        content: "You are an HR data generator. Generate realistic employee data in JSON format. Return only valid JSON array with no additional text."
+                    },
+                    {
+                        role: "user",
+                        content: prompt
+                    }
+                ];
+                
+                // Use SAP AI Core Orchestration format
                 fetch(endpoint, {
                     method: "POST",
                     headers: {
@@ -372,18 +386,22 @@ sap.ui.define([
                         "AI-Resource-Group": that._aiConfig.resourceGroup || "default"
                     },
                     body: JSON.stringify({
-                        messages: [
-                            {
-                                role: "system",
-                                content: "You are an HR data generator. Generate realistic employee data in JSON format. Return only valid JSON array with no additional text."
-                            },
-                            {
-                                role: "user",
-                                content: prompt
+                        config: {
+                            modules: {
+                                prompt_templating: {
+                                    model: {
+                                        name: "anthropic--claude-4.6-sonnet",
+                                        params: {
+                                            max_tokens: 4000,
+                                            temperature: 0.7
+                                        }
+                                    },
+                                    prompt: {
+                                        template: messages
+                                    }
+                                }
                             }
-                        ],
-                        max_tokens: 4000,
-                        temperature: 0.7
+                        }
                     })
                 })
                 .then(function(response) {
@@ -423,7 +441,13 @@ sap.ui.define([
                 .then(function(data) {
                     console.log("[AI] Parsed response:", data);
                     
-                    var content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+                    // Handle orchestration response format
+                    // Response can be in: data.orchestration_result.choices[0].message.content
+                    // or data.choices[0].message.content
+                    var content = 
+                        (data.orchestration_result && data.orchestration_result.choices && data.orchestration_result.choices[0] && data.orchestration_result.choices[0].message && data.orchestration_result.choices[0].message.content) ||
+                        (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content);
+                    
                     if (content) {
                         console.log("[AI] AI response content:", content.substring(0, 200));
                         try {
