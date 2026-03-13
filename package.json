@@ -1,6 +1,6 @@
 {
   "name": "expressecm",
-  "version": "0.0.2",
+  "version": "0.0.6",
   "description": "An SAP Fiori application.",
   "keywords": [
     "ui5",
