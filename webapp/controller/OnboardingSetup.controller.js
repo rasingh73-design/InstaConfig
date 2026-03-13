@@ -726,9 +726,9 @@ sap.ui.define([
                         that._hideBusyDialog();
                         MessageToast.show("Workbook generated! Loading upload screen...");
 
-                        // Navigate to App view (upload functionality)
+                        // Navigate to expressecv view (upload functionality)
                         setTimeout(function() {
-                            that.getOwnerComponent().getRouter().navTo("RouteApp");
+                            that.getOwnerComponent().getRouter().navTo("Routeexpressecv");
                         }, 300);
                     } else {
                         // Download the workbook
