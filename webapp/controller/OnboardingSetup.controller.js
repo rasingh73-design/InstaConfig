@@ -203,13 +203,43 @@ sap.ui.define([
 
         // ===== IMPORT FUNCTIONS =====
         onImportCSV: function() {
-            var oUploader = this.byId("csvUploader");
-            oUploader.getDomRef().querySelector("input[type='file']").click();
+            var that = this;
+            // Create a temporary file input since hidden FileUploader doesn't render
+            var fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.accept = ".csv";
+            fileInput.onchange = function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(evt) {
+                        that._parseCSVData(evt.target.result);
+                    };
+                    reader.readAsText(e.target.files[0]);
+                }
+            };
+            fileInput.click();
         },
 
         onImportExcel: function() {
-            var oUploader = this.byId("excelUploader");
-            oUploader.getDomRef().querySelector("input[type='file']").click();
+            var that = this;
+            // Create a temporary file input since hidden FileUploader doesn't render
+            var fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.accept = ".xlsx,.xls";
+            fileInput.onchange = function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(evt) {
+                        var data = new Uint8Array(evt.target.result);
+                        var workbook = XLSX.read(data, { type: "array" });
+                        var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        var csvData = XLSX.utils.sheet_to_csv(firstSheet);
+                        that._parseCSVData(csvData);
+                    };
+                    reader.readAsArrayBuffer(e.target.files[0]);
+                }
+            };
+            fileInput.click();
         },
 
         onCSVFileSelected: function(oEvent) {
